@@ -32,6 +32,5 @@ model.add(Dense(1))
 model.compile(loss='mse', optimizer='adam')
 model.fit(X_train, y_train, validation_split=0.2, shuffle=True, epochs=5)
 
-model.save('my_first_model.h5')
-
+model.save('steering.h5')
 
