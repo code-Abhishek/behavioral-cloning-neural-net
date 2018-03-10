@@ -15,20 +15,19 @@ with open('data/driving_log.csv') as file:
 images = []
 measurements = []
 lines = lines[1:] # discard first line as it is just titles, not data
+correction = 0.2
 for line in lines:
-    source_path = line[0]
-    filename = source_path.split('/')[-1] # Grab the file name, cutting off the base path
-    current_path = './data/IMG/' + filename
-    image = cv2.imread(current_path)
-    images.append(image)
+    for i in range(3):
+        source_path = line[i] # line[0],[1],[2] are the center/left/right pics  
+        filename = source_path.split('/')[-1] # Grab the file name, cutting off the base path
+        path = './data/IMG/' + filename
+        image = cv2.imread(path)
+        images.append(image)
     measurement = float(line[3])
-    measurements.append(measurement)
-    
-    flipped_image = cv2.flip(image, 1)
-    flipped_measurement = float(measurement) * -1.0
-    images.append(flipped_image)
-    measurements.append(flipped_measurement)
-    
+    measurements.append(measurement) # center camera 
+    measurements.append(measurement + correction) # left camera 
+    measurements.append(measurement - correction) # right camera
+
 X_train = np.array(images) 
 y_train = np.array(measurements) 
 
@@ -48,5 +47,22 @@ model.add(Dense(1))
 model.compile(loss='mse', optimizer='adam')
 model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=4)
 
+# Augment the data and fit again due to memory constraints -- you can't do it all at once
+aug_images = []
+aug_measurements = []
+for image, measurement in zip(images, measurements):
+    flipped_image = cv2.flip(image, 1)
+    flipped_measurement = float(measurement) * -1.0
+    aug_images.append(flipped_image)
+    aug_measurements.append(flipped_measurement)
+
+X_train = np.array(aug_images) 
+y_train = np.array(aug_measurements) 
+
+model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=4)
+
 model.save('steering.h5')
+
+
+
 
