@@ -1,13 +1,21 @@
 import csv
 import cv2
 import numpy as np
+import pdb
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda, Cropping2D, Dropout
 from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import MaxPooling2D
 
+# Read the CSV from Udacity
 lines = []
-with open('data/driving_log.csv') as file:
+with open('data/driving_log.csv') as file: 
+    reader = csv.reader(file)
+    for line in reader:
+        lines.append(line)
+
+# Add custom dataset 
+with open('sdc-sim/driving_log.csv') as file:
     reader = csv.reader(file)
     for line in reader:
         lines.append(line)
@@ -15,14 +23,16 @@ with open('data/driving_log.csv') as file:
 images = []
 measurements = []
 lines = lines[1:] # discard first line as it is just titles, not data
-correction = 0.2
+correction = 0.5 # degrees? Probably too small
 for line in lines:
+    # Append three images to the list
     for i in range(3):
         source_path = line[i] # line[0],[1],[2] are the center/left/right pics  
         filename = source_path.split('/')[-1] # Grab the file name, cutting off the base path
         path = './data/IMG/' + filename
         image = cv2.imread(path)
         images.append(image)
+    # Append three measurements to the list
     measurement = float(line[3])
     measurements.append(measurement) # center camera 
     measurements.append(measurement + correction) # left camera 
@@ -61,6 +71,7 @@ y_train = np.array(aug_measurements)
 
 model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=4)
 
+print('Saving model to file...')
 model.save('steering.h5')
 
 
