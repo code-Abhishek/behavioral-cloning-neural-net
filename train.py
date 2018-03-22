@@ -21,7 +21,7 @@ def path_to_filename(path):
         return path.split('/')[-1] # Grab the file name, cutting off the base path
 
 def generator(samples, batch_size=32):
-    """Takes the a list of lines from a CSV and generates a list of image filenames
+    """Takes the a list of lines from a CSV and generates a list of images
     and steering measurements
     """
     n_samples = len(samples)
@@ -32,7 +32,7 @@ def generator(samples, batch_size=32):
             measurements = []
             for sample in batch_samples: # This is a line of the CSV file
                 for i in range(3):
-                    source_path = line[i] # line[0],[1],[2] are the center/left/right pics  
+                    source_path = sample[i] # line[0],[1],[2] are the center/left/right pics  
                     filename = path_to_filename(source_path)
                     path = './data/IMG/' + filename
                     image = cv2.imread(path)
@@ -42,22 +42,26 @@ def generator(samples, batch_size=32):
                         pdb.set_trace()
                     images.append(image)
                 # Append three measurements to the list
-                measurement = float(line[3])
+                measurement = float(sample[3])
                 measurements.append(measurement) # center camera 
                 measurements.append(measurement + correction) # left camera 
                 measurements.append(measurement - correction) # right camera
 
-            # Add mirror image data to the dataset
-            # for image, measurement in zip(images, measurements):
-               # flipped_image = cv2.flip(image, 1)
-               # flipped_measurement = float(measurement) * -1.0
-               # images.append(flipped_image)
-               # measurements.append(flipped_measurement)
+            # After we've run through the entire batch, go through and augment the data via mirroring
+            aug_images = []
+            aug_measurements = []
+            for image, measurement in zip(images, measurements):
+                flipped_image = cv2.flip(image, 1)
+                flipped_measurement = measurement * -1.0
+                aug_images.append(flipped_image)
+                aug_measurements.append(flipped_measurement)
+            images += aug_images
+            measurements += aug_measurements
 
             X_train = np.array(images) 
             y_train = np.array(measurements) 
-            yield (X_train, y_train) # inputs, targets
-            # yield sklearn.utils.shuffle(X_train, y_train) # inputs, targets
+            # yield (X_train, y_train) # inputs, targets
+            yield sklearn.utils.shuffle(X_train, y_train) # inputs, targets
 
 # Read the CSV from Udacity
 lines = []
@@ -70,7 +74,7 @@ with open('data/driving_log.csv') as file:
 lines = lines[1:] # discard first line as it is just titles, not data
 
 # Add custom dataset 
-with open('sdc-sim/driving_log.csv') as file:
+with open('./data/sdc-sim/driving_log.csv') as file:
     reader = csv.reader(file)
     for line in reader:
         tmp_lines.append(line)
@@ -82,7 +86,6 @@ train, val = train_test_split(lines, test_size=0.2) # Split the CSV into a test/
 
 train_gen = generator(train, batch_size)
 val_gen = generator(val, batch_size)
-pdb.set_trace()
 
 model = Sequential()
 model.add(Lambda(lambda x: (x / 255.0) - 0.5, input_shape=(160,320,3)))
@@ -99,7 +102,7 @@ model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
 model.fit_generator(train_gen, steps_per_epoch = len(train) / batch_size, \
-    epochs=5, validation_data=val_gen, validation_steps = len(val) / batch_size, verbose=2) # Shuffle is on by default
+    epochs=5, validation_data=val_gen, validation_steps = len(val) / batch_size) # Shuffle is on by default
 
 
 print('Saving model to file...')
