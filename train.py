@@ -4,6 +4,8 @@ import numpy as np
 import pdb
 from sklearn.model_selection import train_test_split
 import sklearn
+import random
+from pathlib import Path
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda, Cropping2D, Dropout
 from keras.layers.convolutional import Convolution2D
@@ -63,24 +65,24 @@ def generator(samples, batch_size=32):
             # yield (X_train, y_train) # inputs, targets
             yield sklearn.utils.shuffle(X_train, y_train) # inputs, targets
 
-# Read the CSV from Udacity
+# Read all CSVs that I'm using 
+PATH = Path('data/CSVs')
+CSVs = list(PATH.iterdir())
+
 lines = []
-tmp_lines = []
-with open('data/driving_log.csv') as file: 
-    reader = csv.reader(file)
-    for line in reader:
-        lines.append(line)
+for CSV in CSVs:
+    with open(str(CSV)) as file: 
+        reader = csv.reader(file)
+        tmp_lines = []
+        for line in reader:
+            tmp_lines.append(line)
+        print('Reading file', str(CSV), 'it has', len(tmp_lines), 'lines!')
+        tmp_lines = tmp_lines[1:] # discard first line as it is just titles, not data
+        lines += tmp_lines
 
-lines = lines[1:] # discard first line as it is just titles, not data
-
-# Add custom dataset 
-with open('./data/sdc-sim/driving_log.csv') as file:
-    reader = csv.reader(file)
-    for line in reader:
-        tmp_lines.append(line)
-
-tmp_lines = tmp_lines[1:]
-lines += tmp_lines
+# pdb.set_trace()
+random.shuffle(lines) # Shuffle the order
+print('Using', len(lines), 'different data points with three images each')
 
 train, val = train_test_split(lines, test_size=0.2) # Split the CSV into a test/val dataset
 
