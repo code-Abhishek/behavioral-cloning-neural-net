@@ -22,7 +22,7 @@ Using the Udacity provided simulator, you can quickly generate large amounts of 
 
 Here's a screenshot of the simulator:
 
-![sim] <!-- maybe get a better screenshot -->
+![sim]
 
 You can drive the car around the track manually, continually recording images from three cameras and the associated steering angle. The cameras record from the car's point of view, as if there were three different dashcams inside the car. Here is an example:
 
@@ -35,7 +35,7 @@ You can drive the car around the track manually, continually recording images fr
 #### Right camera
 ![right]
 
-This is useful because it provides with network with triple the data. For the center image, you can simply feed in the image along with whatever the steering angle was at the time. For instance, in this example the car is headed into the side of the bridge, and the associated steering angle was 0.2 (this is a normalized number between -1 and 1, not actual degrees -- 1 being hard right, -1 being hard left). We can then use the left and right images with slightly adjusted steering angles (???)
+This is useful because it provides with network with triple the data. For the center image, you can simply feed in the image along with whatever the steering angle was at the time. For instance, in this example the car is headed into the side of the bridge, and the associated steering angle was 0.2 (this is a normalized number between -1 and 1, not actual degrees -- 1 being hard right, -1 being hard left). We can then use the left and right images with slightly adjusted steering angles.
 
 This also provides the car with a large percentage of data that is not simply driving straight forward. If the entire dataset used to train the car was perfectly driven in the middle of the road, the car would have no way of learning to correct itself if it ever veered to the side. An effective and easy way to prevent this is to use these side camera angles to provide the car with a large amount of 'error' examples, essentially telling the car: "if you ever see yourself driving off to the side, this is how you correct yourself."
 
