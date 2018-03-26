@@ -2,16 +2,11 @@
 
 ## Writeup
 
----
-
-**Behavioral Cloning Project**
-
 The steps of this project were the following:
-* Use the simulator to collect data of good driving behavior
-* Build a convolution neural network in Keras that predicts steering angles from images
+* Use a Udacity provided vehicle simulator to collect data of good driving behavior
+* Build a convolution neural network in Keras that predicts steering angles from camera images
 * Train and validate the model with a training and validation set
 * Test that the model successfully drives around the track without leaving the road
-
 
 ### Data Collection
 
@@ -32,13 +27,13 @@ You can drive the car around the track manually, continually recording images fr
 #### Right camera
 ![right]
 
-This is useful because it provides with network with triple the data. For the center image, you can simply feed in the image along with whatever the steering angle was at the time. For instance, in this example the car is headed into the side of the bridge, and the associated steering angle was 0.2 (this is a normalized number between -1 and 1, not actual degrees -- 1 being hard right, -1 being hard left). We can then use the left and right images with slightly adjusted steering angles.
+This is useful because it provides with network with triple the data compared to only having one camera. For the center image, you can simply feed in the image along with whatever the steering angle was at the time. For instance, in this example the car is headed into the side of the bridge, and the associated steering angle was 0.2 (this is a normalized number between -1 and 1, not actual degrees -- 1 being hard right, -1 being hard left). We can then use the left and right images with slightly adjusted steering angles.
 
 This also provides the car with a large percentage of data that is not simply driving straight forward. If the entire dataset used to train the car was perfectly driven in the middle of the road, the car would have no way of learning to correct itself if it ever veered to the side. An effective and easy way to prevent this is to use these side camera angles to provide the car with a large amount of 'error' examples, essentially telling the car: "if you ever see yourself driving off to the side, this is how you correct yourself."
 
 As I trained and tested the model, there were noticable weak spots throughout the track. The car generally performed just fine on straight and even curved portions of the normal road, but there is a portion of the track towards the end where there is a dirt road turn off that the car would take:
 
-#### Dirt Turn off that confused the car
+#### Dirt turn off that confused the car
 ![dirt]
 
 The rest of the track was relatively simple, getting the car to pass this section took a significant amount of my time. I tweaked the network architecture, added more training data, and changed the data augmentation process. Nothing seemed to work. It was finally overhauling the network architecture to follow NVIDIA's model (discussed later) that had a significant improvement.
