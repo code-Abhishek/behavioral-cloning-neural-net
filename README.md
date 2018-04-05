@@ -16,7 +16,7 @@ Here's a screenshot of the simulator:
 
 ![sim]
 
-You can drive the car around the track manually, continually recording images from three cameras and the associated steering angle. The cameras record from the car's point of view, as if there were three different dashcams inside the car. Here is an example:
+You can drive the car around the track manually, continually recording images from three cameras and the associated steering angle. The cameras record from the car's point of view, as if there were three different dashcams inside the car. Here is an example: 
 
 #### Left camera
 ![left]
@@ -31,7 +31,7 @@ This is useful because it provides with network with triple the data compared to
 
 This also provides the car with a large percentage of data that is not simply driving straight forward. If the entire dataset used to train the car was perfectly driven in the middle of the road, the car would have no way of learning to correct itself if it ever veered to the side. An effective and easy way to prevent this is to use these side camera angles to provide the car with a large amount of 'error' examples, essentially telling the car: "if you ever see yourself driving off to the side, this is how you correct yourself."
 
-As I trained and tested the model, there were noticable weak spots throughout the track. The car generally performed just fine on straight and even curved portions of the normal road, but there is a portion of the track towards the end where there is a dirt road turn off that the car would take:
+As I trained and tested the model, there were noticeable weak spots throughout the track. The car generally performed just fine on straight and even curved portions of the normal road, but there is a portion of the track towards the end where there is a dirt road turn off that the car would take:
 
 #### Dirt turn off that confused the car
 ![dirt]
@@ -44,7 +44,7 @@ The rest of the track was relatively simple, getting the car to pass this sectio
 
 As discussed previously, each datapoint recorded contained three images and a center steering measurement. Using an experimentally determined correction factor, each left and right image was assigned a steering measurement based on the center steering measurement. The left image's steering measurement was the center steering measurement plus the correction factor, and the right image's steering measurement was minus the correction factor.
 
-Then, mirrored copies of all the images were created, effectively doubling the size of the dataset. For each mirrored image, the steering measurement was mutiplied by -1.
+Then, mirrored copies of all the images were created, effectively doubling the size of the dataset. For each mirrored image, the steering measurement was multiplied by -1.
 
 Once the dataset was augmented, it was time to preprocess the data.
 
@@ -80,7 +80,7 @@ While training, I carefully observed the validation vs training loss to prevent 
 
 #### Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually.
+The model used an Adam optimizer, so the learning rate was not tuned manually.
 
 ###  Final Model Architecture
 
